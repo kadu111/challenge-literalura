@@ -2,15 +2,15 @@ package br.com.projeto.literalura.model;
 
 public class Autor {
     private String nome;
-    private Integer anoNascimento;
-    private Integer anoFalecimento;
+    private Integer nascimento;
+    private Integer falecimento;
 
     public Autor() {}
 
-    public Autor(String nome, Integer anoNascimento, Integer anoFalecimento) {
-        this.nome = nome;
-        this.anoNascimento = anoNascimento;
-        this.anoFalecimento = anoFalecimento;
+    public Autor(String nome, Integer nascimento, Integer falecimento) {
+        this.nome = (nome != null && !nome.isBlank()) ? nome : "Autor Desconhecido";
+        this.nascimento = nascimento;
+        this.falecimento = falecimento;
     }
 
     public String getNome() {
@@ -18,29 +18,34 @@ public class Autor {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        this.nome = (nome != null && !nome.isBlank()) ? nome : "Autor Desconhecido";
     }
 
-    public Integer getAnoNascimento() {
-        return anoNascimento;
+    public Integer getNascimento() {
+        return nascimento;
     }
 
-    public void setAnoNascimento(Integer anoNascimento) {
-        this.anoNascimento = anoNascimento;
+    public void setNascimento(Integer nascimento) {
+        this.nascimento = nascimento;
     }
 
-    public Integer getAnoFalecimento() {
-        return anoFalecimento;
+    public Integer getFalecimento() {
+        return falecimento;
     }
 
-    public void setAnoFalecimento(Integer anoFalecimento) {
-        this.anoFalecimento = anoFalecimento;
+    public void setFalecimento(Integer falecimento) {
+        this.falecimento = falecimento;
     }
 
     @Override
     public String toString() {
-        return nome +
-                (anoNascimento != null ? " (" + anoNascimento : "") +
-                (anoFalecimento != null ? " - " + anoFalecimento + ")" : (anoNascimento != null ? ")" : ""));
+        String vida = "";
+        if (nascimento != null || falecimento != null) {
+            vida = " (" +
+                    (nascimento != null ? nascimento : "?") + " - " +
+                    (falecimento != null ? falecimento : "?") + ")";
+        }
+
+        return nome + vida;
     }
 }

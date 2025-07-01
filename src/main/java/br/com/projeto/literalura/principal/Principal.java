@@ -1,6 +1,5 @@
 package br.com.projeto.literalura.principal;
 
-import br.com.projeto.literalura.dto.BookDTO;
 import br.com.projeto.literalura.dto.GutendexResponse;
 import br.com.projeto.literalura.model.Autor;
 import br.com.projeto.literalura.model.Livro;
@@ -17,9 +16,7 @@ import java.util.Scanner;
 public class Principal implements CommandLineRunner {
 
     private final List<Livro> catalogoLivros = new ArrayList<>();
-
     private final List<Autor> autoresBuscados = new ArrayList<>();
-
     private final ConsumoApi consumoApi;
 
     public Principal(ConsumoApi consumoApi) {
@@ -49,12 +46,11 @@ public class Principal implements CommandLineRunner {
                         System.out.print("Digite o termo de busca: ");
                         String termo = scanner.nextLine();
                         GutendexResponse resposta = consumoApi.buscarLivros(termo);
-                        if (resposta != null && !resposta.getResults().isEmpty()) {
-                            BookDTO dto = resposta.getResults().get(0);
-                            Livro livro = LivroMapper.fromDto(dto);
+                        if (resposta != null && resposta.results() != null && !resposta.results().isEmpty()) {
+                            var dadosLivro = resposta.results().get(0);
+                            Livro livro = LivroMapper.fromDados(dadosLivro);
                             catalogoLivros.add(livro);
 
-                            //Evita autores duplicados
                             Autor autor = livro.getAutor();
                             if (autoresBuscados.stream().noneMatch(a -> a.getNome().equalsIgnoreCase(autor.getNome()))) {
                                 autoresBuscados.add(autor);
@@ -65,6 +61,7 @@ public class Principal implements CommandLineRunner {
                             System.out.println("Nenhum livro encontrado.");
                         }
                         break;
+
                     case 2:
                         if (catalogoLivros.isEmpty()) {
                             System.out.println("Catálogo vazio.");
@@ -73,6 +70,7 @@ public class Principal implements CommandLineRunner {
                             catalogoLivros.forEach(System.out::println);
                         }
                         break;
+
                     case 3:
                         System.out.print("Digite o idioma (ex: 'en', 'pt'): ");
                         String idioma = scanner.nextLine();
@@ -86,6 +84,7 @@ public class Principal implements CommandLineRunner {
                             filtrados.forEach(System.out::println);
                         }
                         break;
+
                     case 4:
                         if (autoresBuscados.isEmpty()) {
                             System.out.println("Nenhum autor registrado.");
@@ -94,13 +93,14 @@ public class Principal implements CommandLineRunner {
                             autoresBuscados.forEach(System.out::println);
                         }
                         break;
+
                     case 5:
                         System.out.print("Digite o ano desejado: ");
                         int ano = Integer.parseInt(scanner.nextLine());
 
                         List<Autor> vivos = autoresBuscados.stream()
-                                .filter(a -> a.getAnoNascimento() != null && a.getAnoNascimento() <= ano &&
-                                        (a.getAnoFalecimento() == null || a.getAnoFalecimento() > ano))
+                                .filter(a -> a.getNascimento() != null && a.getNascimento() <= ano &&
+                                        (a.getFalecimento() == null || a.getFalecimento() > ano))
                                 .toList();
 
                         if (vivos.isEmpty()) {
@@ -110,11 +110,15 @@ public class Principal implements CommandLineRunner {
                             vivos.forEach(System.out::println);
                         }
                         break;
+
+
                     case 0:
                         System.out.println("Encerrando o programa...");
                         break;
+
                     default:
                         System.out.println("Opção inválida. Tente novamente.");
+                        break;
                 }
 
             } catch (NumberFormatException e) {
